@@ -16,7 +16,17 @@ namespace PageStatistics
                 .UseSerilog(dispose: true)
                 .Build();
             var app = host.Services.GetService<App>();
-            app.Run();
+            var logger = host.Services.GetService<ILogger<Program>>();
+
+            try
+            {
+                logger.Log(LogLevel.Information, "Starting console app");
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(LogLevel.Error, ex, "Critical error");
+            }
         }
 
         private static void ConfigureHostServices(HostBuilderContext context, IServiceCollection services)
