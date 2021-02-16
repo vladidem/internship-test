@@ -45,6 +45,7 @@ namespace PageStatistics
 
             services.AddTransient<IPageLoader, PageLoader>();
             services.AddTransient<IConsole, SystemConsole>();
+            services.AddTransient<ITextExtractor, TextExtractor>();
         }
 
         private static void ConfigureLogging()
