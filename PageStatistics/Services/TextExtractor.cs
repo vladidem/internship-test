@@ -1,4 +1,5 @@
 using System.IO;
+using System.Web;
 using HtmlAgilityPack;
 
 namespace PageStatistics.Services
@@ -11,7 +12,7 @@ namespace PageStatistics.Services
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
 
-            return htmlDoc.DocumentNode.InnerText;
+            return HttpUtility.HtmlDecode(htmlDoc.DocumentNode.InnerText);
         }
     }
 }
