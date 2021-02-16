@@ -71,14 +71,20 @@ namespace PageStatistics
                 .GetExportedTypes()
                 .Where(x => x.Namespace == echoCommandType.Namespace && commandType.IsAssignableFrom(x));
 
-            foreach (var command in commands) services.AddSingleton(commandType, command);
+            foreach (var command in commands)
+            {
+                services.AddSingleton(commandType, command);
+            }
         }
 
         private static Parser BuildCliParser(IServiceProvider services)
         {
             var commandLineBuilder = new CommandLineBuilder();
 
-            foreach (var command in services.GetServices<Command>()) commandLineBuilder.AddCommand(command);
+            foreach (var command in services.GetServices<Command>())
+            {
+                commandLineBuilder.AddCommand(command);
+            }
 
             return commandLineBuilder.UseDefaults().Build();
         }
