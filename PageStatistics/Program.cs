@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.CommandLine.Builder;
+using System.CommandLine.IO;
 using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PageStatistics.Commands;
+using PageStatistics.Services;
 using Serilog;
 
 namespace PageStatistics
@@ -40,6 +42,9 @@ namespace PageStatistics
         {
             ConfigureLogging();
             ConfigureCliCommands(services);
+
+            services.AddTransient<IPageLoader, PageLoader>();
+            services.AddTransient<IConsole, SystemConsole>();
         }
 
         private static void ConfigureLogging()
