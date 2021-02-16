@@ -39,7 +39,7 @@ namespace PageStatistics.Commands
 
             Console.WriteLine($"{echo}");
 
-            return 1;
+            return 0;
         }
     }
 }

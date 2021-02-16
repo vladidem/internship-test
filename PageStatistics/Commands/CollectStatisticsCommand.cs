@@ -63,7 +63,7 @@ namespace PageStatistics.Commands
 
             PrintStatistics(_counter.Statistics);
 
-            return 1;
+            return 0;
         }
 
         private void PrintStatistics(Dictionary<string, int> statistics)
