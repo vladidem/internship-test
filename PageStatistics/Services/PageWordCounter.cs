@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
 
 namespace PageStatistics.Services
 {
@@ -31,11 +30,8 @@ namespace PageStatistics.Services
             '-'
         };
 
-        private readonly IConsole _console;
-
-        public PageWordCounter(IConsole console)
+        public PageWordCounter()
         {
-            _console = console;
             Statistics = new Dictionary<string, int>();
         }
 
