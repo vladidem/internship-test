@@ -6,6 +6,7 @@ using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,9 @@ namespace PageStatistics
 
             try
             {
+                logger.Log(LogLevel.Information, "Ensuring database created");
+                EnsureDatabaseCreated(host);
+
                 logger.Log(LogLevel.Information, "Starting console app");
                 return await cliParser.InvokeAsync(args).ConfigureAwait(false);
             }
@@ -47,6 +51,11 @@ namespace PageStatistics
             services.AddTransient<IConsole, SystemConsole>();
             services.AddTransient<ITextExtractor, TextExtractor>();
             services.AddTransient<IPageWordCounter, PageWordCounter>();
+            services.AddDbContext<IPageStatisticsDbContext, PageStatisticsDbContext>(options =>
+            {
+                var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");
+                options.UseSqlite($"Data Source ={pathToDb}");
+            });
         }
 
         private static void ConfigureLogging()
@@ -54,7 +63,7 @@ namespace PageStatistics
             var logFile = Path.Join(Directory.GetCurrentDirectory(), "log");
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .WriteTo.File(logFile)
                 .WriteTo.Console()
@@ -87,6 +96,11 @@ namespace PageStatistics
             }
 
             return commandLineBuilder.UseDefaults().Build();
+        }
+
+        private static void EnsureDatabaseCreated(IHost host)
+        {
+            host.Services.GetService<IPageStatisticsDbContext>().Database.EnsureCreated();
         }
     }
 }
