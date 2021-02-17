@@ -1,18 +1,10 @@
 ﻿using System;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.IO;
 using System.CommandLine.Parsing;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PageStatistics.Commands;
-using PageStatistics.Services;
-using Serilog;
 
 namespace PageStatistics
 {
@@ -20,17 +12,15 @@ namespace PageStatistics
     {
         public static async Task<int> Main(string[] args)
         {
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureServices(ConfigureHostServices)
-                .UseSerilog(dispose: true)
-                .Build();
-            var logger = host.Services.GetService<ILogger<Program>>();
-            var cliParser = BuildCliParser(host.Services);
+            var host = Startup.BuildHost();
+            var services = host.Services;
+            var logger = services.GetService<ILogger<Program>>();
+            var cliParser = BuildCliParser(services);
 
             try
             {
                 logger.Log(LogLevel.Information, "Ensuring database created");
-                EnsureDatabaseCreated(host);
+                EnsureDatabaseCreated(services);
 
                 logger.Log(LogLevel.Information, "Starting console app");
                 return await cliParser.InvokeAsync(args).ConfigureAwait(false);
@@ -39,50 +29,6 @@ namespace PageStatistics
             {
                 logger.Log(LogLevel.Error, ex, "Critical error");
                 return 0;
-            }
-        }
-
-        private static void ConfigureHostServices(HostBuilderContext context, IServiceCollection services)
-        {
-            ConfigureLogging();
-            ConfigureCliCommands(services);
-
-            services.AddTransient<IPageLoader, PageLoader>();
-            services.AddTransient<IConsole, SystemConsole>();
-            services.AddTransient<ITextExtractor, TextExtractor>();
-            services.AddTransient<IPageWordCounter, PageWordCounter>();
-            services.AddDbContext<IPageStatisticsDbContext, PageStatisticsDbContext>(options =>
-            {
-                var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");
-                options.UseSqlite($"Data Source ={pathToDb}");
-            });
-        }
-
-        private static void ConfigureLogging()
-        {
-            var logFile = Path.Join(Directory.GetCurrentDirectory(), "log");
-
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                .WriteTo.File(logFile)
-                .WriteTo.Console()
-                .CreateLogger();
-        }
-
-        private static void ConfigureCliCommands(IServiceCollection services)
-        {
-            var echoCommandType = typeof(EchoCommand);
-            var commandType = typeof(Command);
-
-            var commands = echoCommandType
-                .Assembly
-                .GetExportedTypes()
-                .Where(x => x.Namespace == echoCommandType.Namespace && commandType.IsAssignableFrom(x));
-
-            foreach (var command in commands)
-            {
-                services.AddSingleton(commandType, command);
             }
         }
 
@@ -98,9 +44,9 @@ namespace PageStatistics
             return commandLineBuilder.UseDefaults().Build();
         }
 
-        private static void EnsureDatabaseCreated(IHost host)
+        private static void EnsureDatabaseCreated(IServiceProvider services)
         {
-            host.Services.GetService<IPageStatisticsDbContext>().Database.EnsureCreated();
+            services.GetService<IPageStatisticsDbContext>().Database.EnsureCreated();
         }
     }
 }
