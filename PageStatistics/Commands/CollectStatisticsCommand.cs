@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ConsoleTables;
 using Microsoft.Extensions.Logging;
 using PageStatistics.Services;
 
@@ -67,10 +69,14 @@ namespace PageStatistics.Commands
 
         private void PrintStatistics(Dictionary<string, int> statistics)
         {
+            var table = new ConsoleTable("Word", "Frequency");
             foreach (var (word, count) in statistics.ToList().OrderByDescending(keyValue => keyValue.Value))
             {
-                _console.Out.Write($"{word} :\t {count}\n");
+                table.AddRow(word, count);
             }
+
+            _console.Out.WriteLine("Words statistics:");
+            _console.Out.WriteLine(table.ToString());
         }
     }
 }
