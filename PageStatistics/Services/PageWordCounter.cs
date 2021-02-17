@@ -50,6 +50,10 @@ namespace PageStatistics.Services
             foreach (var word in words)
             {
                 var normalizedWord = NormalizeWord(word);
+                if (ShouldNotCount(normalizedWord))
+                {
+                    continue;
+                }
 
                 var currentCount = Statistics.ContainsKey(normalizedWord) ? Statistics[normalizedWord] : 0;
                 Statistics[normalizedWord] = currentCount + 1;
@@ -81,6 +85,11 @@ namespace PageStatistics.Services
         private static string NormalizeWord(string word)
         {
             return word.ToLower();
+        }
+
+        private static bool ShouldNotCount(string word)
+        {
+            return word == null || !word.Any(char.IsLetterOrDigit);
         }
     }
 }
