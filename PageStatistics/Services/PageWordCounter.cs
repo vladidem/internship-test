@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace PageStatistics.Services
 {
@@ -42,16 +44,43 @@ namespace PageStatistics.Services
 
         public void AddText(string text)
         {
-            var words = text.Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
+            var words = RemoveSpecialChars(text)
+                .Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var word in words)
             {
-                var normalizedWord = word.ToLower();
+                var normalizedWord = NormalizeWord(word);
+
                 var currentCount = Statistics.ContainsKey(normalizedWord) ? Statistics[normalizedWord] : 0;
                 Statistics[normalizedWord] = currentCount + 1;
             }
         }
 
         public Dictionary<string, int> Statistics { get; }
+
+        private static string RemoveSpecialChars(string text)
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var c in text)
+            {
+                if (!char.IsControl(c) &&
+                    !char.IsSeparator(c) &&
+                    !char.IsSurrogate(c))
+                {
+                    stringBuilder.Append(c);
+                }
+                else
+                {
+                    stringBuilder.Append(" ");
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private static string NormalizeWord(string word)
+        {
+            return word.ToLower();
+        }
     }
 }
