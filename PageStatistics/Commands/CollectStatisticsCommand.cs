@@ -55,11 +55,10 @@ namespace PageStatistics.Commands
             _logger.Log(LogLevel.Information, $"Started downloading page {address}");
             var fileName = await _loader.Download(address);
 
-            _logger.Log(LogLevel.Information, $"Extracting text from html file {fileName}");
-            var text = _extractor.Extract(fileName);
-
-            _logger.Log(LogLevel.Information, $"Counting word on page {address}");
-            _counter.AddText(text);
+            foreach (var text in _extractor.Extract(fileName))
+            {
+                _counter.AddText(text);
+            }
 
             PrintStatistics(_counter.Statistics);
 

@@ -4,6 +4,6 @@ namespace PageStatistics.Services
 {
     public interface ITextExtractor
     {
-        public string Extract(string fileName);
+        public IEnumerable<string> Extract(string fileName);
     }
 }
