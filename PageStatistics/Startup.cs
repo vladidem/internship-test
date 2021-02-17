@@ -13,12 +13,11 @@ namespace PageStatistics
 {
     public class Startup
     {
-        public static IHost BuildHost()
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder()
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureServices(ConfigureHostServices)
-                .UseSerilog(dispose: true)
-                .Build();
+                .UseSerilog(dispose: true);
         }
 
         private static void ConfigureHostServices(HostBuilderContext context, IServiceCollection services)

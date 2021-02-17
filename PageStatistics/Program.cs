@@ -3,7 +3,9 @@ using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace PageStatistics
@@ -12,15 +14,15 @@ namespace PageStatistics
     {
         public static async Task<int> Main(string[] args)
         {
-            var host = Startup.BuildHost();
+            var host = CreateHostBuilder(args).Build();
             var services = host.Services;
             var logger = services.GetService<ILogger<Program>>();
             var cliParser = BuildCliParser(services);
 
             try
             {
-                logger.Log(LogLevel.Information, "Ensuring database created");
-                EnsureDatabaseCreated(services);
+                logger.Log(LogLevel.Information, "Ensuring database is up to date");
+                EnsureDatabaseUpToDate(services);
 
                 logger.Log(LogLevel.Information, "Starting console app");
                 return await cliParser.InvokeAsync(args).ConfigureAwait(false);
@@ -31,6 +33,9 @@ namespace PageStatistics
                 return 0;
             }
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args)
+            => Startup.CreateHostBuilder(args);
 
         private static Parser BuildCliParser(IServiceProvider services)
         {
@@ -44,9 +49,10 @@ namespace PageStatistics
             return commandLineBuilder.UseDefaults().Build();
         }
 
-        private static void EnsureDatabaseCreated(IServiceProvider services)
+        private static void EnsureDatabaseUpToDate(IServiceProvider services)
         {
-            services.GetService<IPageStatisticsDbContext>().Database.EnsureCreated();
+            var db = services.GetService<IPageStatisticsDbContext>().Database;
+            db.EnsureCreated();
         }
     }
 }
