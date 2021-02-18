@@ -33,7 +33,7 @@ namespace PageStatistics
             services.AddTransient<IWordStatistics, WordStatistics>();
             services.AddDbContext<IPageStatisticsDbContext, PageStatisticsDbContext>(options =>
                 {
-                    var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");
+                    var pathToDb = Path.Join(Directory.GetCurrentDirectory(), ".data", "database.sqlite");
                     options.UseSqlite($"Data Source ={pathToDb}");
                 }
             );
@@ -41,7 +41,7 @@ namespace PageStatistics
 
         private static void ConfigureLogging()
         {
-            var logFile = Path.Join(Directory.GetCurrentDirectory(), "log");
+            var logFile = Path.Join(Directory.GetCurrentDirectory(), ".data", "log");
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Warning()
