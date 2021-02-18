@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using PageStatistics.Models;
 
-namespace PageStatistics
+namespace PageStatistics.Infrastructure
 {
     public interface IPageStatisticsDbContext
     {

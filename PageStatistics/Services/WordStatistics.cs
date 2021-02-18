@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PageStatistics.Models;
+using PageStatistics.Infrastructure;
 
 namespace PageStatistics.Services
 {

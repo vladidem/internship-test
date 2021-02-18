@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PageStatistics.Commands;
+using PageStatistics.Infrastructure;
 using PageStatistics.Services;
 using Serilog;
 

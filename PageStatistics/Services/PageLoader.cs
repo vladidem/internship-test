@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PageStatistics.Models;
+using PageStatistics.Infrastructure;
 
 namespace PageStatistics.Services
 {

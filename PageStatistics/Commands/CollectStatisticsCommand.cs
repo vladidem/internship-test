@@ -9,6 +9,7 @@ using ConsoleTables;
 using Microsoft.Extensions.Logging;
 using PageStatistics.Models;
 using PageStatistics.Services;
+using PageStatistics.Infrastructure;
 
 namespace PageStatistics.Commands
 {

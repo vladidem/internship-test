@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PageStatistics.Models;
 
-namespace PageStatistics
+namespace PageStatistics.Infrastructure
 {
     public class PageStatisticsDbContext : DbContext, IPageStatisticsDbContext
     {
