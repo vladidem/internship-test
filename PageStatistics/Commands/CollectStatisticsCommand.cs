@@ -57,7 +57,7 @@ namespace PageStatistics.Commands
             AddArgument(addressArgument);
 
             var thresholdOption = new Option<int>(
-                "threshold",
+                "--threshold",
                 "Minimum frequency for word to show in results."
             );
             AddOption(thresholdOption);
