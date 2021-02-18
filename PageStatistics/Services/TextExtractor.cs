@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using HtmlAgilityPack;
+using PageStatistics.Models;
 
 namespace PageStatistics.Services
 {
@@ -9,9 +10,9 @@ namespace PageStatistics.Services
     {
         private static readonly List<string> IgnoredNodes = new List<string> {"head", "script", "style"};
 
-        public IEnumerable<string> Extract(string fileName)
+        public IEnumerable<string> Extract(Page page)
         {
-            var html = File.ReadAllText(fileName);
+            var html = File.ReadAllText(page.FileName);
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
             return NodeText(htmlDoc.DocumentNode);

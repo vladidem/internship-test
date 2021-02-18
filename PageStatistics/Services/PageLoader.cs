@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PageStatistics.Models;
 
 namespace PageStatistics.Services
 {
@@ -17,7 +18,19 @@ namespace PageStatistics.Services
             _console = console;
         }
 
-        public async Task<string> Download(string address)
+        public async Task<Page> Create(string address)
+        {
+            var page = new Page()
+            {
+                FileName = await Download(address),
+                Address = address,
+                LoadedAt = DateTime.Now,
+            };
+
+            return page;
+        }
+
+        private async Task<string> Download(string address)
         {
             var fileName = Path.Join(Directory.GetCurrentDirectory(), MakeValidFileName(address) + ".html");
             var webClient = new WebClient();
@@ -26,6 +39,7 @@ namespace PageStatistics.Services
             webClient.DownloadFileCompleted += DownloadCompletedCallback;
 
             await webClient.DownloadFileTaskAsync(new Uri(address), fileName);
+
             return fileName;
         }
 

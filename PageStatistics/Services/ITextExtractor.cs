@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PageStatistics.Models;
 
 namespace PageStatistics.Services
 {
@@ -9,6 +10,6 @@ namespace PageStatistics.Services
         /// </summary>
         /// <param name="fileName">Path to html file.</param>
         /// <returns>Text parts of html file.</returns>
-        public IEnumerable<string> Extract(string fileName);
+        public IEnumerable<string> Extract(Page page);
     }
 }
