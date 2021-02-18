@@ -18,6 +18,7 @@ namespace PageStatistics.Services
             '!',
             '?',
             '"',
+            '\'',
             ';',
             ':',
             '[',
@@ -79,7 +80,7 @@ namespace PageStatistics.Services
 
         private static bool ShouldCount(string word)
         {
-            return word != null && word.Any(char.IsLetterOrDigit);
+            return word != null && word.Any(char.IsLetter);
         }
     }
 }
