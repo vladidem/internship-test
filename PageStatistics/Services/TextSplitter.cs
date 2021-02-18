@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PageStatistics.Services
 {
-    public class PageWordCounter : IPageWordCounter
+    public class TextSplitter : ITextSplitter
     {
         private static readonly char[] Delimiters =
         {
@@ -37,12 +37,7 @@ namespace PageStatistics.Services
             '-'
         };
 
-        public PageWordCounter()
-        {
-            Statistics = new Dictionary<string, int>();
-        }
-
-        public void AddText(string text)
+        public IEnumerable<string> SplitText(string text)
         {
             var words = RemoveSpecialChars(text)
                 .Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
@@ -50,17 +45,12 @@ namespace PageStatistics.Services
             foreach (var word in words)
             {
                 var normalizedWord = NormalizeWord(word);
-                if (ShouldNotCount(normalizedWord))
+                if (ShouldCount(normalizedWord))
                 {
-                    continue;
+                    yield return normalizedWord;
                 }
-
-                var currentCount = Statistics.ContainsKey(normalizedWord) ? Statistics[normalizedWord] : 0;
-                Statistics[normalizedWord] = currentCount + 1;
             }
         }
-
-        public Dictionary<string, int> Statistics { get; }
 
         private static string RemoveSpecialChars(string text)
         {
@@ -87,9 +77,9 @@ namespace PageStatistics.Services
             return word.ToLower();
         }
 
-        private static bool ShouldNotCount(string word)
+        private static bool ShouldCount(string word)
         {
-            return word == null || !word.Any(char.IsLetterOrDigit);
+            return word != null && word.Any(char.IsLetterOrDigit);
         }
     }
 }

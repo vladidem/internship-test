@@ -28,7 +28,8 @@ namespace PageStatistics
             services.AddTransient<IPageLoader, PageLoader>();
             services.AddTransient<IConsole, SystemConsole>();
             services.AddTransient<ITextExtractor, TextExtractor>();
-            services.AddTransient<IPageWordCounter, PageWordCounter>();
+            services.AddTransient<ITextSplitter, TextSplitter>();
+            services.AddTransient<IWordStatistics, WordStatistics>();
             services.AddDbContext<IPageStatisticsDbContext, PageStatisticsDbContext>(options =>
             {
                 var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");

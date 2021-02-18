@@ -18,29 +18,30 @@ namespace PageStatistics.Commands
         private const string CommandDescription = "Download page by address and collect word statistics";
 
         private readonly IConsole _console;
-        private readonly IPageWordCounter _counter;
+        private readonly ITextSplitter _splitter;
         private readonly IPageStatisticsDbContext _dbContext;
         private readonly ITextExtractor _extractor;
         private readonly IPageLoader _loader;
         private readonly ILogger<EchoCommand> _logger;
-
-        private Page _page;
+        private readonly IWordStatistics _wordStatistics;
 
         public CollectStatisticsCommand(
             ILogger<EchoCommand> logger,
             IPageLoader loader,
             ITextExtractor extractor,
-            IPageWordCounter counter,
+            ITextSplitter splitter,
             IConsole console,
+            IWordStatistics wordStatistics,
             IPageStatisticsDbContext dbContext
         ) : base(CommandName, CommandDescription)
         {
             _logger = logger;
             _loader = loader;
             _extractor = extractor;
-            _counter = counter;
+            _splitter = splitter;
             _console = console;
             _dbContext = dbContext;
+            _wordStatistics = wordStatistics;
 
             ConfigureCommand();
         }
@@ -60,52 +61,22 @@ namespace PageStatistics.Commands
 
         private async Task<int> HandleCommand(string address)
         {
-            _logger.Log(LogLevel.Information, $"Started downloading page {address}");
-            _page = await _loader.Create(address);
-            _dbContext.Pages.SingleInsert(_page);
+            var page = await _loader.Create(address);
+            _wordStatistics.Page = page;
 
-            foreach (var text in _extractor.Extract(_page))
+            foreach (var text in _extractor.Extract(page))
+            foreach (var word in _splitter.SplitText(text))
             {
-                _counter.AddText(text);
+                _wordStatistics.AddWord(word);
             }
 
-            var wordFrequencies = StatisticsToWordFrequencyList(_counter.Statistics);
-            _dbContext.WordFrequencies.BulkInsert(wordFrequencies, options => { options.BatchSize = 250; });
+            var wordFrequencies = _wordStatistics.ToWordFrequencyList();
 
             PrintWordFrequencies(wordFrequencies);
 
             return 0;
         }
 
-        private List<WordFrequency> StatisticsToWordFrequencyList(Dictionary<string, int> statistics)
-        {
-            var words = CreateWordsByName(statistics.Select(pair => pair.Key).ToList());
-            return words.Select(word =>
-                    new WordFrequency
-                    {
-                        PageId = _page.Id, Page = _page, Word = word, WordId = word.Id,
-                        Frequency = statistics[word.Name]
-                    }
-                )
-                .ToList();
-        }
-
-        private List<Word> CreateWordsByName(List<string> wordNames)
-        {
-            var existingWords = _dbContext.Words.Where(word => wordNames.Contains(word.Name)).ToList();
-            var existingWordNames = existingWords.Select(word => word.Name).ToList();
-            var createdWords = new List<Word>();
-
-            foreach (var wordName in wordNames.Except(existingWordNames))
-            {
-                var word = new Word {Name = wordName};
-                createdWords.Add(word);
-            }
-
-            _dbContext.Words.BulkInsert(createdWords, options => { options.BatchSize = 250; });
-            existingWords.AddRange(createdWords);
-            return existingWords;
-        }
 
         private void PrintWordFrequencies(List<WordFrequency> wordFrequencies)
         {

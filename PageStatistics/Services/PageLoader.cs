@@ -12,10 +12,11 @@ namespace PageStatistics.Services
     public class PageLoader : IPageLoader
     {
         private readonly IConsole _console;
-
-        public PageLoader(IConsole console)
+        private readonly IPageStatisticsDbContext _dbContext;
+        public PageLoader(IConsole console, IPageStatisticsDbContext dbContext)
         {
             _console = console;
+            _dbContext = dbContext;
         }
 
         public async Task<Page> Create(string address)
@@ -26,6 +27,7 @@ namespace PageStatistics.Services
                 Address = address,
                 LoadedAt = DateTime.Now,
             };
+            _dbContext.Pages.SingleInsert(page);
 
             return page;
         }
