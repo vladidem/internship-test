@@ -6,8 +6,6 @@ using System.CommandLine.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ConsoleTables;
-using Microsoft.Extensions.Logging;
-using PageStatistics.Infrastructure;
 using PageStatistics.Models;
 using PageStatistics.Services;
 
@@ -19,29 +17,23 @@ namespace PageStatistics.Commands
         private const string CommandDescription = "Download page by address and collect word statistics";
 
         private readonly IConsole _console;
-        private readonly IPageStatisticsDbContext _dbContext;
         private readonly ITextExtractor _extractor;
         private readonly IPageLoader _loader;
-        private readonly ILogger<EchoCommand> _logger;
         private readonly ITextSplitter _splitter;
         private readonly IWordStatistics _wordStatistics;
 
         public CollectStatisticsCommand(
-            ILogger<EchoCommand> logger,
             IPageLoader loader,
             ITextExtractor extractor,
             ITextSplitter splitter,
             IConsole console,
-            IWordStatistics wordStatistics,
-            IPageStatisticsDbContext dbContext
+            IWordStatistics wordStatistics
         ) : base(CommandName, CommandDescription)
         {
-            _logger = logger;
             _loader = loader;
             _extractor = extractor;
             _splitter = splitter;
             _console = console;
-            _dbContext = dbContext;
             _wordStatistics = wordStatistics;
 
             ConfigureCommand();
@@ -88,7 +80,6 @@ namespace PageStatistics.Commands
 
             return 0;
         }
-
 
         private void PrintWordFrequencies(List<WordFrequency> wordFrequencies)
         {
