@@ -44,7 +44,7 @@ namespace PageStatistics
             var logFile = Path.Join(Directory.GetCurrentDirectory(), "log");
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Warning()
                 .Enrich.FromLogContext()
                 .WriteTo.File(logFile)
                 .WriteTo.Console()
