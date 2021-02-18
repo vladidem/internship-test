@@ -36,7 +36,7 @@ namespace PageStatistics.Services
 
         private async Task<string> Download(string address)
         {
-            var fileName = Path.Join(Directory.GetCurrentDirectory(), MakeValidFileName(address) + ".html");
+            var fileName = Path.Join(Directory.GetCurrentDirectory(), ".data", MakeValidFileName(address) + ".html");
             var webClient = new WebClient();
 
             webClient.DownloadProgressChanged += DownloadProgressCallback;
