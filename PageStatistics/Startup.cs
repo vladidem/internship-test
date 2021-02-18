@@ -35,6 +35,8 @@ namespace PageStatistics
                 {
                     var pathToDb = Path.Join(Directory.GetCurrentDirectory(), ".data", "database.sqlite");
                     options.UseSqlite($"Data Source ={pathToDb}");
+                    options.EnableDetailedErrors();
+                    options.EnableSensitiveDataLogging();
                 }
             );
         }
@@ -44,10 +46,9 @@ namespace PageStatistics
             var logFile = Path.Join(Directory.GetCurrentDirectory(), ".data", "log");
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Warning()
+                .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .WriteTo.File(logFile)
-                .WriteTo.Console()
                 .CreateLogger();
         }
 

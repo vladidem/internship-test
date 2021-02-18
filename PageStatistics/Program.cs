@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CommandLine;
 using System.CommandLine.Builder;
+using System.CommandLine.IO;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace PageStatistics
             var host = CreateHostBuilder(args).Build();
             var services = host.Services;
             var logger = services.GetService<ILogger<Program>>();
+            var console = services.GetService<IConsole>();
             var cliParser = BuildCliParser(services);
 
             try
@@ -31,7 +33,8 @@ namespace PageStatistics
             catch (Exception ex)
             {
                 logger.Log(LogLevel.Error, ex, "Critical error");
-                return 0;
+                console.Error.WriteLine(ex.ToString());
+                return 1;
             }
         }
 
