@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
+using System.CommandLine.Parsing;
 using System.Linq;
 using System.Threading.Tasks;
 using ConsoleTables;
@@ -51,16 +52,21 @@ namespace PageStatistics.Commands
         {
             var addressArgument = new Argument<string>
             {
-                Name = "address"
+                Name = "address",
+                Description = "Address of page to collect word statistics from."
             };
-
             AddArgument(addressArgument);
 
+            var thresholdOption = new Option<int>(
+                "threshold",
+                "Minimum frequency for word to show in results.");
+            AddOption(thresholdOption);
+
             Handler = CommandHandler.Create(
-                (Func<string, Task<int>>) HandleCommand);
+                (Func<string, int, Task<int>>) HandleCommand);
         }
 
-        private async Task<int> HandleCommand(string address)
+        private async Task<int> HandleCommand(string address, int threshold = 5)
         {
             var page = await _loader.Create(address);
             _wordStatistics.Page = page;
@@ -73,7 +79,11 @@ namespace PageStatistics.Commands
 
             var wordFrequencies = _wordStatistics.ToWordFrequencyList();
 
-            PrintWordFrequencies(wordFrequencies);
+            PrintWordFrequencies(
+                wordFrequencies.Where(
+                    wordFrequency=> wordFrequency.Frequency >= threshold
+                    ).ToList()
+                );
 
             return 0;
         }
