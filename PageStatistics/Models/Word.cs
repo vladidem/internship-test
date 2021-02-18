@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace PageStatistics.Models
 {
     public class Word
