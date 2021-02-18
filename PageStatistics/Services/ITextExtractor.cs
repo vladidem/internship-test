@@ -9,7 +9,7 @@ namespace PageStatistics.Services
         ///     Extract text from html Page.
         /// </summary>
         /// <param name="page">Page model.</param>
-        /// <returns>Text parts of html file.</returns>
-        public IEnumerable<string> Extract(Page page);
+        /// <returns>Text of html file.</returns>
+        public string Extract(Page page);
     }
 }

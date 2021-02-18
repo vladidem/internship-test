@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Web;
 using HtmlAgilityPack;
 using PageStatistics.Models;
@@ -8,14 +9,19 @@ namespace PageStatistics.Services
 {
     public class TextExtractor : ITextExtractor
     {
+        private const string TagSeparator = " ";
         private static readonly List<string> IgnoredNodes = new List<string> {"head", "script", "style"};
 
-        public IEnumerable<string> Extract(Page page)
+        public string Extract(Page page)
         {
             var html = File.ReadAllText(page.FileName);
             var htmlDoc = new HtmlDocument();
+
             htmlDoc.LoadHtml(html);
-            return NodeText(htmlDoc.DocumentNode);
+            var sb = new StringBuilder();
+            BuildNodeText(htmlDoc.DocumentNode, sb);
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -30,23 +36,23 @@ namespace PageStatistics.Services
         ///     </code>
         ///     returns "firstsecond" instead of separate words.
         /// </remarks>
-        private IEnumerable<string> NodeText(HtmlNode node)
+        private void BuildNodeText(HtmlNode node, StringBuilder sb)
         {
-            if (node.NodeType == HtmlNodeType.Text)
-            {
-                yield return HttpUtility.HtmlDecode(((HtmlTextNode) node).Text);
-                yield break;
-            }
-
             if (ShouldSkip(node))
             {
-                yield break;
+                return;
+            }
+
+            if (node.NodeType == HtmlNodeType.Text)
+            {
+                sb.Append(HttpUtility.HtmlDecode(((HtmlTextNode) node).Text));
+                sb.Append(TagSeparator);
+                return;
             }
 
             foreach (var childNode in node.ChildNodes)
-            foreach (var text in NodeText(childNode))
             {
-                yield return text;
+                BuildNodeText(childNode, sb);
             }
         }
 

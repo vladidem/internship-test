@@ -64,8 +64,7 @@ namespace PageStatistics.Commands
             var page = await _loader.Create(address);
             _wordStatistics.Page = page;
 
-            foreach (var text in _extractor.Extract(page))
-            foreach (var word in _splitter.SplitText(text))
+            foreach (var word in _splitter.SplitText(_extractor.Extract(page)))
             {
                 _wordStatistics.AddWord(word);
             }
