@@ -5,8 +5,8 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PageStatistics.Models;
 using PageStatistics.Infrastructure;
+using PageStatistics.Models;
 
 namespace PageStatistics.Services
 {
@@ -14,6 +14,7 @@ namespace PageStatistics.Services
     {
         private readonly IConsole _console;
         private readonly IPageStatisticsDbContext _dbContext;
+
         public PageLoader(IConsole console, IPageStatisticsDbContext dbContext)
         {
             _console = console;
@@ -22,11 +23,11 @@ namespace PageStatistics.Services
 
         public async Task<Page> Create(string address)
         {
-            var page = new Page()
+            var page = new Page
             {
                 FileName = await Download(address),
                 Address = address,
-                LoadedAt = DateTime.Now,
+                LoadedAt = DateTime.Now
             };
             _dbContext.Pages.SingleInsert(page);
 

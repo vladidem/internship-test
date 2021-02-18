@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PageStatistics.Models;
 using PageStatistics.Infrastructure;
+using PageStatistics.Models;
 
 namespace PageStatistics.Services
 {
     public class WordStatistics : IWordStatistics
     {
         private readonly IPageStatisticsDbContext _dbContext;
-        private readonly Dictionary<string, int> _statistics= new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _statistics = new Dictionary<string, int>();
 
         public WordStatistics(IPageStatisticsDbContext dbContext)
         {
             _dbContext = dbContext;
-
         }
+
         public Page Page { set; get; }
 
         public void AddWord(string word)
@@ -45,7 +45,7 @@ namespace PageStatistics.Services
                 .BulkInsert(
                     wordFrequencies,
                     options => { options.BatchSize = 250; }
-                    );
+                );
 
             return wordFrequencies;
         }

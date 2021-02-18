@@ -30,7 +30,8 @@ namespace PageStatistics.Commands
             AddArgument(echoArgument);
 
             Handler = CommandHandler.Create(
-                (Func<string, int>) HandleCommand);
+                (Func<string, int>) HandleCommand
+            );
         }
 
         private int HandleCommand(string echo)

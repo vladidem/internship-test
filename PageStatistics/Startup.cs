@@ -32,10 +32,11 @@ namespace PageStatistics
             services.AddTransient<ITextSplitter, TextSplitter>();
             services.AddTransient<IWordStatistics, WordStatistics>();
             services.AddDbContext<IPageStatisticsDbContext, PageStatisticsDbContext>(options =>
-            {
-                var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");
-                options.UseSqlite($"Data Source ={pathToDb}");
-            });
+                {
+                    var pathToDb = Path.Join(Directory.GetCurrentDirectory(), "database.sqlite");
+                    options.UseSqlite($"Data Source ={pathToDb}");
+                }
+            );
         }
 
         private static void ConfigureLogging()

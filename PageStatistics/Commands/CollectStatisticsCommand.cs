@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
-using System.CommandLine.Parsing;
 using System.Linq;
 using System.Threading.Tasks;
 using ConsoleTables;
 using Microsoft.Extensions.Logging;
+using PageStatistics.Infrastructure;
 using PageStatistics.Models;
 using PageStatistics.Services;
-using PageStatistics.Infrastructure;
 
 namespace PageStatistics.Commands
 {
@@ -20,11 +19,11 @@ namespace PageStatistics.Commands
         private const string CommandDescription = "Download page by address and collect word statistics";
 
         private readonly IConsole _console;
-        private readonly ITextSplitter _splitter;
         private readonly IPageStatisticsDbContext _dbContext;
         private readonly ITextExtractor _extractor;
         private readonly IPageLoader _loader;
         private readonly ILogger<EchoCommand> _logger;
+        private readonly ITextSplitter _splitter;
         private readonly IWordStatistics _wordStatistics;
 
         public CollectStatisticsCommand(
@@ -59,11 +58,13 @@ namespace PageStatistics.Commands
 
             var thresholdOption = new Option<int>(
                 "threshold",
-                "Minimum frequency for word to show in results.");
+                "Minimum frequency for word to show in results."
+            );
             AddOption(thresholdOption);
 
             Handler = CommandHandler.Create(
-                (Func<string, int, Task<int>>) HandleCommand);
+                (Func<string, int, Task<int>>) HandleCommand
+            );
         }
 
         private async Task<int> HandleCommand(string address, int threshold = 5)
@@ -81,9 +82,9 @@ namespace PageStatistics.Commands
 
             PrintWordFrequencies(
                 wordFrequencies.Where(
-                    wordFrequency=> wordFrequency.Frequency >= threshold
-                    ).ToList()
-                );
+                    wordFrequency => wordFrequency.Frequency >= threshold
+                ).ToList()
+            );
 
             return 0;
         }
