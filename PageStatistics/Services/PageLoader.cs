@@ -1,6 +1,4 @@
 using System;
-using System.CommandLine;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -12,12 +10,10 @@ namespace PageStatistics.Services
 {
     public class PageLoader : IPageLoader
     {
-        private readonly IConsole _console;
         private readonly IPageStatisticsDbContext _dbContext;
 
-        public PageLoader(IConsole console, IPageStatisticsDbContext dbContext)
+        public PageLoader(IPageStatisticsDbContext dbContext)
         {
-            _console = console;
             _dbContext = dbContext;
         }
 
@@ -39,9 +35,6 @@ namespace PageStatistics.Services
             var fileName = Path.Join(Directory.GetCurrentDirectory(), ".data", MakeValidFileName(address) + ".html");
             var webClient = new WebClient();
 
-            webClient.DownloadProgressChanged += DownloadProgressCallback;
-            webClient.DownloadFileCompleted += DownloadCompletedCallback;
-
             await webClient.DownloadFileTaskAsync(new Uri(address), fileName);
 
             return fileName;
@@ -53,17 +46,6 @@ namespace PageStatistics.Services
             var invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
 
             return Regex.Replace(name, invalidRegStr, "_");
-        }
-
-        private void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
-        {
-            var progress = $"\r{e.ProgressPercentage} % complete";
-            _console.Out.Write(progress);
-        }
-
-        private void DownloadCompletedCallback(object sender, AsyncCompletedEventArgs e)
-        {
-            _console.Out.Write("\n");
         }
     }
 }

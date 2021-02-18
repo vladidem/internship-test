@@ -61,16 +61,20 @@ namespace PageStatistics.Commands
 
         private async Task<int> HandleCommand(string address, int threshold = 5)
         {
+            _console.Out.WriteLine($"Downloading page {address}");
             var page = await _loader.Create(address);
-            _wordStatistics.Page = page;
 
-            foreach (var word in _splitter.SplitText(_extractor.Extract(page)))
+            _console.Out.WriteLine($"Extracting text from page");
+            var text = _extractor.Extract(page);
+
+            _console.Out.WriteLine($"Counting word statistics");
+            _wordStatistics.Page = page;
+            foreach (var word in _splitter.SplitText(text))
             {
                 _wordStatistics.AddWord(word);
             }
 
             var wordFrequencies = _wordStatistics.ToWordFrequencyList();
-
             PrintWordFrequencies(
                 wordFrequencies.Where(
                     wordFrequency => wordFrequency.Frequency >= threshold
