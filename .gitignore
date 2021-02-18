@@ -362,4 +362,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .idea/
+
 .data/
+
+Release/
